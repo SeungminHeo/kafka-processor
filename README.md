@@ -1,1 +1,3 @@
-log-simulator
+# Log Simulator
+
+소종 프롵젝트를 위한 실시간 데이터 시뮬레이터를 작성합니다.
