@@ -22,4 +22,28 @@ class DataBaseConnection {
         dbPassword = "Whfvm1234";
     }
 
+    public ResultSet loadLogData(String query) throws SQLException {
+        try {
+            Connection conn = DriverManager.getConnection(this.dbUrl, this.dbUser, this.dbPassword);
+            Statement statement = conn.createStatement();
+            ResultSet logData = statement.executeQuery(query);
+            return logData;
+        } catch (SQLTimeoutException e) {
+            throw new SQLTimeoutException("Lost Connection for Database. Do Reconnect.");
+        } catch (SQLSyntaxErrorException e) {
+            throw new SQLSyntaxErrorException("Wrong SQL syntax");
+        }
+    }
+
+    public ResultSet loadLogData() throws SQLException {
+        try {
+            Connection conn = DriverManager.getConnection(this.dbUrl, this.dbUser, this.dbPassword);
+            Statement statement = conn.createStatement();
+            ResultSet logData = statement.executeQuery(
+                    "SELECT * FROM logdata WHERE time > '2020-09-21' - INTERVAL 1 day");
+            return logData;
+        } catch (SQLTimeoutException e) {
+            throw new SQLTimeoutException("Lost Connection for Database. Do Reconnect.");
+        }
+    }
 }
