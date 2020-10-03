@@ -1,3 +1,9 @@
-# Log Simulator
+# Kafka Processor
 
-소종 프롵젝트를 위한 실시간 데이터 시뮬레이터를 작성합니다.
+카프카로 구현할 기능들의 집합입니다.
+---
+## Log Simulator
+
+
+
+## Kafka Streams Processor
