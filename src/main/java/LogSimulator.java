@@ -1,7 +1,9 @@
+import model.Logs;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.json.JSONObject;
-import utils.KafkaJsonSerializer;
+import utils.database.DataBaseConnection;
+import utils.serdes.KafkaJsonSerializer;
+import utils.Topics;
 
 import java.sql.*;
 import java.util.Properties;
@@ -29,21 +31,25 @@ public class LogSimulator {
 
     public void simulate(String topicName) {
         try {
-            Producer<String, String> kafkaProducer = new KafkaProducer<String, String>(props, new StringSerializer(), new KafkaJsonSerializer());
+            Producer<String, Logs> kafkaProducer = new KafkaProducer<String, Logs>(props, new StringSerializer(), new KafkaJsonSerializer());
+
             for(int i=0; i<90; i++) {
                 System.out.println(String.format("Day %s Simulating..", i));
                 DataBaseConnection dbc = new DataBaseConnection();
                 logData = dbc.loadLogData(
                         String.format("SELECT * FROM logdata WHERE time < '2020-09-21' - INTERVAL %s day AND time > '2020-09-21' - INTERVAL %s day", i - 1, i));
                 while(logData.next()) {
-                    String jsonMessage = convertToJsonObj(logData);
-                    ProducerRecord<String, String> record = new ProducerRecord<>(topicName, jsonMessage);
+                    int random = (int)(300 * Math.random());
+                    Thread.sleep(random);
+                    Logs jsonMessage = convertToJsonObj(logData);
+                    ProducerRecord<String, Logs> record = new ProducerRecord<>(topicName, jsonMessage);
                     logSender(kafkaProducer, record);
                 }
                 System.out.println("Log Simulator OK.");
             }
+            kafkaProducer.close();
 
-        } catch (SQLException e) {
+        } catch (SQLException | InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -64,13 +70,27 @@ public class LogSimulator {
         }
     }
 
-    private static String convertToJsonObj(ResultSet resultSet) throws SQLException {
+    private static Logs convertToJsonObj(ResultSet resultSet) throws SQLException {
+        Logs logs = Logs
+                .builder()
+                .piwikId(resultSet.getString("piwik_id"))
+                .time(resultSet.getTime("time"))
+                .visitCount(resultSet.getInt("visit_cnt"))
+                .isApp(resultSet.getString("is_app"))
+                .isMobile(resultSet.getString("is_mobile"))
+                .title(resultSet.getString("title"))
+                .url(resultSet.getString("url"))
+                .urlref(resultSet.getString("urlref"))
+                .dateId(resultSet.getDate("date_id"))
+                .build();
 
-        int total_columns = resultSet.getMetaData().getColumnCount();
-        JSONObject obj = new JSONObject();
-        for (int i = 0; i < total_columns; i++) {
-            obj.put(resultSet.getMetaData().getColumnLabel(i + 1).toLowerCase(), resultSet.getObject(i + 1));
-        }
-        return obj.toString();
+        return logs;
+    }
+
+    public static void main(String[] args){
+        LogSimulator logSimulator = new LogSimulator();
+
+        logSimulator.simulate(Topics.LOG_DATA_RAW.topicName());
     }
 }
+
