@@ -1,6 +1,5 @@
 package model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -8,9 +7,8 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
-public class ClickLogs {
+public class OrderCompleteLogs {
     private String piwikId;
     private Timestamp time;
     private int visitCount;
@@ -20,21 +18,16 @@ public class ClickLogs {
     private String url;
     private String urlref;
     private Date dateId;
-    private String itemId;
-    private String categoryId;
 
     public static Builder builder() {
         return new Builder();
     }
 
-    public static Builder builder(Logs logs) {
-        return new Builder(logs);
-    }
+    public static Builder builder(Logs logs) { return new Builder(logs); }
 
-    public ClickLogs() { }
+    public OrderCompleteLogs() { }
 
-    public ClickLogs(String piwikId, Timestamp time, int visitCount, String isApp, String isMobile, String title,
-                     String url, String urlref, Date dateId, String itemId, String categoryId) {
+    public OrderCompleteLogs(String piwikId, Timestamp time, int visitCount, String isApp, String isMobile, String title, String url, String urlref, Date dateId) {
         this.piwikId = piwikId;
         this.time = time;
         this.visitCount = visitCount;
@@ -44,11 +37,9 @@ public class ClickLogs {
         this.url = url;
         this.urlref = urlref;
         this.dateId = dateId;
-        this.itemId = itemId;
-        this.categoryId = categoryId;
     }
 
-    public ClickLogs(Builder builder) {
+    public OrderCompleteLogs(Builder builder) {
         piwikId = builder.piwikId;
         time = builder.time;
         visitCount = builder.visitCount;
@@ -58,11 +49,9 @@ public class ClickLogs {
         url = builder.url;
         urlref = builder.urlref;
         dateId = builder.dateId;
-        itemId = builder.itemId;
-        categoryId = builder.categoryId;
     }
 
-    public ClickLogs(ClickLogs copy) {
+    public OrderCompleteLogs(OrderCompleteLogs copy) {
         Builder builder = new Builder();
         builder.piwikId = copy.piwikId;
         builder.time = copy.time;
@@ -73,8 +62,6 @@ public class ClickLogs {
         builder.url = copy.url;
         builder.urlref = copy.urlref;
         builder.dateId = copy.dateId;
-        builder.itemId = copy.itemId;
-        builder.categoryId = copy.categoryId;
     }
 
     public String getPiwikId() {
@@ -149,22 +136,6 @@ public class ClickLogs {
         this.dateId = dateId;
     }
 
-    public String getItemId() {
-        return itemId;
-    }
-
-    public void setItemId(String itemId) {
-        this.itemId = itemId;
-    }
-
-    public String getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(String categoryId) {
-        this.categoryId = categoryId;
-    }
-
     public Map<String, Object> toMap() {
         Map<String, Object> raw = new HashMap<>();
         raw.put("piwikId", this.piwikId);
@@ -176,8 +147,6 @@ public class ClickLogs {
         raw.put("url", this.url);
         raw.put("urlref", this.urlref);
         raw.put("dateId", this.dateId.toString());
-        raw.put("itemId", this.itemId);
-        raw.put("categoryId", this.categoryId);
         return raw;
     }
 
@@ -201,12 +170,9 @@ public class ClickLogs {
         private String url;
         private String urlref;
         private Date dateId;
-        private String itemId;
-        private String categoryId;
 
 
-        private Builder() {
-        }
+        private Builder() { }
 
         private Builder(Logs logs) {
             this.piwikId = logs.getPiwikId();
@@ -218,7 +184,6 @@ public class ClickLogs {
             this.url = logs.getUrl();
             this.urlref = logs.getUrlref();
             this.dateId = logs.getDateId();
-            preprocess();
         }
 
         public Builder piwikId(String value) {
@@ -266,25 +231,8 @@ public class ClickLogs {
             return this;
         }
 
-        public Builder preprocess() {
-            Objects.requireNonNull(url, "Url is not set, null is not allowed.");
-            // parsing itemid from click_log
-            if (url.contains("branduid=")) {
-                this.itemId = url.split("branduid=")[1].split("&")[0].split("#")[0];
-            } else {
-                this.itemId = null;
-            }
-            // parsing item categoryId from click_log
-            if (url.contains("xcode=")) {
-                this.categoryId = url.split("xcode=")[1].split("&")[0];
-            } else {
-                this.categoryId = null;
-            }
-            return this;
-        }
-
-        public ClickLogs build() {
-            return new ClickLogs(this);
+        public OrderCompleteLogs build() {
+            return new OrderCompleteLogs(this);
         }
     }
 }

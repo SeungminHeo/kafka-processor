@@ -5,27 +5,29 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.sql.Date;
-import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
 
 public class Logs {
-    @JsonProperty private String piwikId;
-    @JsonProperty private Time time;
-    @JsonProperty private int visitCount;
-    @JsonProperty private String isApp;
-    @JsonProperty private String isMobile;
-    @JsonProperty private String title;
-    @JsonProperty private String url;
-    @JsonProperty private String urlref;
-    @JsonProperty private Date dateId;
+    private String piwikId;
+    private Timestamp time;
+    private int visitCount;
+    private String isApp;
+    private String isMobile;
+    private String title;
+    private String url;
+    private String urlref;
+    private Date dateId;
 
     public static Builder builder() {
         return new Builder();
     }
 
-    public Logs(String piwikId, Time time, int visitCount, String isApp, String isMobile, String title, String url, String urlref, Date dateId) {
+    public Logs() { }
+
+    public Logs(String piwikId, Timestamp time, int visitCount, String isApp, String isMobile, String title, String url, String urlref, Date dateId) {
         this.piwikId = piwikId;
         this.time = time;
         this.visitCount = visitCount;
@@ -62,6 +64,78 @@ public class Logs {
         builder.dateId = copy.dateId;
     }
 
+    public String getPiwikId() {
+        return piwikId;
+    }
+
+    public void setPiwikId(String piwikId) {
+        this.piwikId = piwikId;
+    }
+
+    public Timestamp getTime() {
+        return time;
+    }
+
+    public void setTime(Timestamp time) {
+        this.time = time;
+    }
+
+    public int getVisitCount() {
+        return visitCount;
+    }
+
+    public void setVisitCount(int visitCount) {
+        this.visitCount = visitCount;
+    }
+
+    public String getIsApp() {
+        return isApp;
+    }
+
+    public void setIsApp(String isApp) {
+        this.isApp = isApp;
+    }
+
+    public String getIsMobile() {
+        return isMobile;
+    }
+
+    public void setIsMobile(String isMobile) {
+        this.isMobile = isMobile;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getUrlref() {
+        return urlref;
+    }
+
+    public void setUrlref(String urlref) {
+        this.urlref = urlref;
+    }
+
+    public Date getDateId() {
+        return dateId;
+    }
+
+    public void setDateId(Date dateId) {
+        this.dateId = dateId;
+    }
+
     public Map<String, Object> toMap() {
         Map<String, Object> raw = new HashMap<>();
         raw.put("piwikId", this.piwikId);
@@ -88,7 +162,7 @@ public class Logs {
 
     public static final class Builder {
         private String piwikId;
-        private Time time;
+        private Timestamp time;
         private int visitCount;
         private String isApp;
         private String isMobile;
@@ -106,7 +180,7 @@ public class Logs {
             return this;
         }
 
-        public Builder time(Time value) {
+        public Builder time(Timestamp value) {
             time = value;
             return this;
         }
