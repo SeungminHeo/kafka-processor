@@ -8,26 +8,28 @@ import java.sql.Date;
 import java.sql.Time;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
-public class PreprocessedLogs {
-    @JsonProperty private String piwikId;
-    @JsonProperty private Time time;
-    @JsonProperty private int visitCount;
-    @JsonProperty private String isApp;
-    @JsonProperty private String isMobile;
-    @JsonProperty private String title;
-    @JsonProperty private String url;
-    @JsonProperty private String urlref;
-    @JsonProperty private Date dateId;
-    @JsonProperty private String itemId;
-    @JsonProperty private String categoryId;
+public class ClickLogs {
+    private String piwikId;
+    private Time time;
+    private int visitCount;
+    private String isApp;
+    private String isMobile;
+    private String title;
+    private String url;
+    private String urlref;
+    private Date dateId;
+    private String itemId;
+    private String categoryId;
 
 
     public static Builder builder() {
         return new Builder();
     }
 
-    public PreprocessedLogs(String piwikId, Time time, int visitCount, String isApp, String isMobile, String title, String url, String urlref, Date dateId) {
+    public ClickLogs(String piwikId, Time time, int visitCount, String isApp, String isMobile, String title,
+                            String url, String urlref, Date dateId, String itemId, String categoryId) {
         this.piwikId = piwikId;
         this.time = time;
         this.visitCount = visitCount;
@@ -37,9 +39,11 @@ public class PreprocessedLogs {
         this.url = url;
         this.urlref = urlref;
         this.dateId = dateId;
+        this.itemId = itemId;
+        this.categoryId = categoryId;
     }
 
-    public PreprocessedLogs(Builder builder) {
+    public ClickLogs(Builder builder) {
         piwikId = builder.piwikId;
         time = builder.time;
         visitCount = builder.visitCount;
@@ -49,9 +53,11 @@ public class PreprocessedLogs {
         url = builder.url;
         urlref = builder.urlref;
         dateId = builder.dateId;
+        itemId = builder.itemId;
+        categoryId = builder.categoryId;
     }
 
-    public PreprocessedLogs(PreprocessedLogs copy) {
+    public ClickLogs(ClickLogs copy) {
         Builder builder = new Builder();
         builder.piwikId = copy.piwikId;
         builder.time = copy.time;
@@ -62,6 +68,8 @@ public class PreprocessedLogs {
         builder.url = copy.url;
         builder.urlref = copy.urlref;
         builder.dateId = copy.dateId;
+        builder.itemId = copy.itemId;
+        builder.categoryId = copy.categoryId;
     }
 
     public Map<String, Object> toMap() {
@@ -75,6 +83,8 @@ public class PreprocessedLogs {
         raw.put("url", this.url);
         raw.put("urlref", this.urlref);
         raw.put("dateId", this.dateId.toString());
+        raw.put("itemId", this.itemId);
+        raw.put("categoryId", this.categoryId);
         return raw;
     }
 
@@ -98,6 +108,8 @@ public class PreprocessedLogs {
         private String url;
         private String urlref;
         private Date dateId;
+        private String itemId;
+        private String categoryId;
 
 
         private Builder() {
@@ -148,8 +160,25 @@ public class PreprocessedLogs {
             return this;
         }
 
-        public PreprocessedLogs build() {
-            return new PreprocessedLogs(this);
+        public Builder preprocess() {
+            Objects.requireNonNull(url, "Url is not set, null is not allowed.");
+            // parsing itemid from click_log
+            if (url.contains("branduid=")) {
+                this.itemId = url.split("branduid=")[1].split("&")[0];
+            } else {
+                this.itemId = null;
+            }
+            // parsing item categoryId from click_log
+            if (url.contains("xcode=")) {
+                this.categoryId = url.split("xcode=")[1].split("&")[0];
+            } else {
+                this.categoryId = null;
+            }
+            return this;
+        }
+
+        public ClickLogs build() {
+            return new ClickLogs(this);
         }
     }
 }
