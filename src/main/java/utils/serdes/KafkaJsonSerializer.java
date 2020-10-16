@@ -5,7 +5,7 @@ import org.apache.kafka.common.serialization.Serializer;
 
 import java.util.Map;
 
-public class KafkaJsonSerializer implements Serializer {
+public class KafkaJsonSerializer<T> implements Serializer {
 
     @Override
     public void configure(Map map, boolean b) {
