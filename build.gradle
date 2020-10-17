@@ -31,8 +31,22 @@ task runSimulator(type: JavaExec){
     main = "LogSimulator"
 }
 
+task runTopicManager(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    main = "TopicManager"
+}
+
 task runStreamProcessor(type: JavaExec){
     classpath sourceSets.main.runtimeClasspath
     main = "StreamProcessor"
 }
 
+task runClickRankingProcessor(type: JavaExec){
+    classpath sourceSets.main.runtimeClasspath
+    main = "ClickRankingProcessor"
+}
+
+task runClickMatrixProcessor(type: JavaExec){
+    classpath sourceSets.main.runtimeClasspath
+    main = "ClickMatrixProcessor"
+}
