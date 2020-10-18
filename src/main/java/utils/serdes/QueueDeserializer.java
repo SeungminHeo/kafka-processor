@@ -39,7 +39,7 @@ public class QueueDeserializer<T> implements Deserializer<Queue<T>> {
                 queue.add(valueDeserializer.deserialize(s, valueBytes));
             }
         } catch (final IOException e) {
-            throw new RuntimeException("Unable to deserialize PriorityQueue", e);
+            throw new RuntimeException("Unable to deserialize Queue", e);
         }
         return queue;
     }
