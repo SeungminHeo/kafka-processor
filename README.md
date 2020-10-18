@@ -11,11 +11,6 @@
 ```
 ./gradlew runSimulator --args="1000 1"
 ```
- 
-- 사용법 with Docker
-```
-
-```
 
 ## Kafka Streams Processor
 - 사용법 
@@ -24,8 +19,8 @@
 ./gradlew runStreamProcessor 
 
 // Ranking Processor
-TBD
+./gradlew runClickRankingProcessor
 
 // Matrix Processor
-TBD
+./gradlew runClickMatrixProcessor
 ```
