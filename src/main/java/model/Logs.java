@@ -12,6 +12,7 @@ import java.util.Map;
 
 public class Logs {
     private String piwikId;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss")
     private Timestamp time;
     private int visitCount;
     private String isApp;
