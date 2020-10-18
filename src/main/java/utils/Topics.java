@@ -5,32 +5,32 @@ public enum Topics {
     LOG_DATA_RAW {
         @Override
         public String toString() {
-            return "log_data_raw";
+            return "LogDataRaw";
         }
     },
     CLICK_LOG {
         @Override
-        public String toString() { return "click_log"; }
+        public String toString() { return "ClickLog"; }
     },
     ORDER_COMPLETE_LOG {
         @Override
-        public String toString() { return "order_complete_log"; }
+        public String toString() { return "OrderCompleteLog"; }
     },
     SEARCH_LOG {
         @Override
-        public String toString() { return "search_log"; }
+        public String toString() { return "SearchLog"; }
     },
     CART_LOG {
         @Override
-        public String toString() { return "cart_log"; }
+        public String toString() { return "CartLog"; }
     },
     CLICK_RANKING {
         @Override
-        public String toString() { return "click_ranking"; }
+        public String toString() { return "ClickRanking"; }
     },
     CLICK_MATRIX {
         @Override
-        public String toString() { return "click_matrix"; }
+        public String toString() { return "ClickMatrix"; }
     };
 
     public String topicName(){
