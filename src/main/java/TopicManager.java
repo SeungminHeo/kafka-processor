@@ -24,7 +24,7 @@ public class TopicManager {
         List<NewTopic> newTopics = new ArrayList<NewTopic>();
         for (Topics topic : Topics.values()) {
             Thread.sleep(500);
-            newTopics.add(new NewTopic(topic.topicName() , 9, (short) 3));
+            newTopics.add(new NewTopic(topic.topicName() , 60, (short) 3));
         }
         adminClient.createTopics(newTopics);
 
