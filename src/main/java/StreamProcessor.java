@@ -1,46 +1,34 @@
 import model.*;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
-import org.apache.kafka.common.utils.Bytes;
 import org.apache.kafka.streams.*;
 import org.apache.kafka.streams.kstream.*;
-import org.apache.kafka.streams.state.KeyValueStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.Topics;
 import utils.extractor.WebLogTimeExtractor;
-import utils.serdes.PriorityQueueSerde;
 import utils.serdes.StreamsSerdes;
 
-import java.time.Duration;
-import java.util.Comparator;
-import java.util.PriorityQueue;
 import java.util.Properties;
 
 public class StreamProcessor {
 
-    private static Logger LOG = LoggerFactory.getLogger(StreamProcessor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(StreamProcessor.class);
 
     public static void main(String[] args) throws Exception {
 
         StreamsBuilder streamsBuilder = new StreamsBuilder();
 
-        Duration rankingWindow = Duration.ofHours(1);
-        Duration timeOutPeriod = Duration.ofHours(1);
-
         // Set up Serdes
         final Serde<Logs> logsSerde = StreamsSerdes.LogsSerde();
         final Serde<String> stringSerde = Serdes.String();
-        final Serde<Long> longSerde = Serdes.Long();
         final Serde<ClickLogs> clickLogsSerde = StreamsSerdes.ClickLogsSerde();
         final Serde<SearchLogs> searchLogsSerde = StreamsSerdes.SearchLogsSerde();
         final Serde<CartLogs> cartLogsSerde = StreamsSerdes.CartLogsSerde();
         final Serde<OrderCompleteLogs> orderCompleteLogsSerde = StreamsSerdes.OrderCompleteLogsSerde();
-        final Serde<ClickCounts> clickCountsSerde = StreamsSerdes.ClickCountsSerde();
-        final Serde<ClickMatrix> clickMatrixSerde = StreamsSerdes.ClickMatrixSerde();
-        final Serde<Windowed<String>> windowedStringSerde = WindowedSerdes.timeWindowedSerdeFrom(String.class);
 
         // Set up predicates for branch
         final Predicate<String, Logs> clickLogs = (key, logs) -> logs.getUrl().contains("m/product.html");
