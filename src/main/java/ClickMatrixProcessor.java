@@ -33,7 +33,8 @@ public class ClickMatrixProcessor {
         final Serde<ClickMatrix> clickMatrixSerde = StreamsSerdes.ClickMatrixSerde();
         final Serde<Windowed<String>> windowedStringSerde = WindowedSerdes.timeWindowedSerdeFrom(String.class);
 
-        Duration rankingWindow = Duration.ofHours(1);
+        Duration rankingWindow = Duration.ofHours(3);
+        Duration hoppingWindow = Duration.ofMinutes(15);
 
         final KStream<String, ClickLogs> clickLogsKStream = streamsBuilder.stream(Topics.CLICK_LOG.topicName(), Consumed.with(Serdes.String(), clickLogsSerde));
 
@@ -47,10 +48,12 @@ public class ClickMatrixProcessor {
 
         final KTable<Windowed<ClickMatrix>, Long> clickMatrix = clickMatrixTransform
                 .groupByKey(Grouped.with(clickMatrixSerde, clickMatrixSerde))
-                .windowedBy(TimeWindows.of(rankingWindow))
+                .windowedBy(TimeWindows.of(rankingWindow).advanceBy(hoppingWindow))
                 .count(Materialized.as("CountItemByPiwikIdItemId"));
 
         final Comparator<ClickMatrix> nullComparator = (o1, o2) -> 0;
+        final Comparator<ClickMatrix> descendingComparator =
+                (o1, o2) -> (int) (o2.getClickCount() - o1.getClickCount());
 
         final KTable<Windowed<String>, PriorityQueue<ClickMatrix>> allClickMatrixQueue = clickMatrix
                 .groupBy((windowedClickMatrix, count) -> {
@@ -61,7 +64,7 @@ public class ClickMatrixProcessor {
                         },
                         Grouped.with("GroupingByPiwikIdItemId", windowedStringSerde, clickMatrixSerde))
                 .aggregate(
-                        () -> new PriorityQueue<>(nullComparator),
+                        () -> new PriorityQueue<>(descendingComparator),
                         (nullKey, record, queue) -> {
                             queue.add(record);
                             return queue;
@@ -81,10 +84,11 @@ public class ClickMatrixProcessor {
                 mapValues(queue -> {
                     final StringBuilder sb = new StringBuilder();
                     final ClickMatrix firstRecord = queue.poll();
+                    final int queueSize = queue.size();
                     if (firstRecord != null) {
                         sb.append(String.format("\"%s\": ", firstRecord.getPiwikId()));
                         sb.append(String.format("{\"%s\": %s", firstRecord.getItemId(), firstRecord.getClickCount()));
-                        for (int i = 1; i < queue.size(); i++) {
+                        for (int i = 1; i < queueSize; i++) {
                             final ClickMatrix record = queue.poll();
                             if (record == null) {
                                 break;
@@ -123,7 +127,7 @@ public class ClickMatrixProcessor {
         KStream<Windowed<String>, String> clickMatrixStream = aggClickMatrix.toStream();
 
         clickMatrixStream.to(Topics.CLICK_MATRIX.topicName(), Produced.with(windowedStringSerde, stringSerde));
-
+asdfs
         final Topology topology = streamsBuilder.build();
         LOG.debug(String.valueOf(topology.describe()));
         System.out.println(topology.describe());
