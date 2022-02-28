@@ -9,8 +9,14 @@ import java.util.*;
 public class TopicManager {
 
     public static void main(String[] args) throws Exception {
+        boolean isServer = Boolean.parseBoolean(args[0]);
+
         Properties props = new Properties();
-        props.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, "jolp-kafka-001:9092,jolp-kafka-002:9092,jolp-kafka-003:9092");
+        if(isServer) {
+            props.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, "-");
+        } else {
+            props.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, "-");
+        }
 
         AdminClient adminClient = AdminClient.create(props);
 
@@ -23,7 +29,8 @@ public class TopicManager {
 
         List<NewTopic> newTopics = new ArrayList<NewTopic>();
         for (Topics topic : Topics.values()) {
-            Thread.sleep(500);
+            Thread.sleep(1000);
+            System.out.println(topic.topicName() + " is created.");
             newTopics.add(new NewTopic(topic.topicName() , 60, (short) 3));
         }
         adminClient.createTopics(newTopics);

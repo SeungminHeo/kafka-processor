@@ -60,6 +60,10 @@ public class ClickMatrix {
         return raw;
     }
 
+    public String toKeyString() {
+        return this.piwikId + "," + this.itemId;
+    }
+
     @Override
     public String toString() {
         try {

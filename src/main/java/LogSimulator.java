@@ -1,6 +1,7 @@
 import model.Logs;
 import org.apache.kafka.clients.producer.*;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.apache.kafka.streams.StreamsConfig;
 import utils.database.DataBaseConnection;
 import utils.serdes.KafkaJsonSerializer;
 import utils.Topics;
@@ -24,21 +25,26 @@ public class LogSimulator {
         }
     }
 
-    LogSimulator() {
+    LogSimulator(boolean isServer) {
         try {
-            props = configureProducer("jolp-kafka-001:9092,jolp-kafka-002:9092,jolp-kafka-003:9092");
+            if(isServer) {
+                props = configureProducer("-");
+            } else {
+                props = configureProducer("-");
+            }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void simulate(String topicName, int accelerateRate, int dayFromLastDay) {
+    public void simulate(String topicName, int accelerateRate, int dayFromLastDay, boolean isPublic) {
         try {
             Producer<String, Logs> kafkaProducer = new KafkaProducer<String, Logs>(props, new StringSerializer(), new KafkaJsonSerializer());
 
             for(int i=dayFromLastDay; i>=0; i--) {
                 System.out.println(String.format("Day %s Simulating..", i));
-                DataBaseConnection dbc = new DataBaseConnection();
+                DataBaseConnection dbc = new DataBaseConnection(isPublic);
                 logData = dbc.loadLogData(
                         String.format("SELECT * FROM logdata WHERE time < '2020-09-21' - INTERVAL %s day AND time > '2020-09-21' - INTERVAL %s day", i - 1, i));
                 Long waitTime = null;
@@ -100,14 +106,14 @@ public class LogSimulator {
     }
 
     public static void main(String[] args){
-        LogSimulator logSimulator = new LogSimulator();
-//        LogSimulator logSimulator = new LogSimulator("115.85.181.243:9092,115.85.180.11:9092,115.85.180.110:9092");
+        LogSimulator logSimulator = new LogSimulator(Boolean.parseBoolean(args[3]));
         int accelerateRate = Integer.parseInt(args[0]);
         int daysFromLastDay = Integer.parseInt(args[1]);
+        boolean isPublic = Boolean.parseBoolean(args[2]);
 
         System.out.println(String.format("Log Simulating for %s days with x%s speed.", daysFromLastDay, accelerateRate));
 
-        logSimulator.simulate(Topics.LOG_DATA_RAW.topicName(), accelerateRate, daysFromLastDay);
+        logSimulator.simulate(Topics.LOG_DATA_RAW.topicName(), accelerateRate, daysFromLastDay, isPublic);
     }
 }
 

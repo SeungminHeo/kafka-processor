@@ -114,7 +114,7 @@ public class ClickRankingProcessor {
         props.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "snappy");
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, "Jolp-ClickRanking-Processor");
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "jolp-kafka-001:9092,jolp-kafka-002:9092,jolp-kafka-003:9092");
-//        props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "115.85.181.243:9092,115.85.180.11:9092,115.85.180.110:9092");
+//        props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "-");
         props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         props.put(StreamsConfig.REPLICATION_FACTOR_CONFIG, 3);
         props.put(StreamsConfig.DEFAULT_TIMESTAMP_EXTRACTOR_CLASS_CONFIG, WebLogTimeExtractor.class);

@@ -24,6 +24,22 @@ public class DataBaseConnection {
         dbPassword = "Whfvm1234";
     }
 
+    public DataBaseConnection(Boolean isPublic) {
+        /*
+         * 임시용, 나중에 설정 Configuration을 바깥으로 뺴야함.
+         * 끝나면 이 Overload constructor를 지우고 위에것만 사용!
+         */
+        if (isPublic) {
+            dbUrl = "jdbc:mysql://db-4rl2m.pub-cdb.ntruss.com:10024/tmp";
+            dbUser = "dtradmin";
+            dbPassword = "Whfvm1234";
+        } else {
+            dbUrl = "jdbc:mysql://db-4rl2m.cdb.ntruss.com:10024/tmp";
+            dbUser = "dtradmin";
+            dbPassword = "Whfvm1234";
+        }
+    }
+
     public ResultSet loadLogData(String query) throws SQLException {
         try {
             Connection conn = DriverManager.getConnection(this.dbUrl, this.dbUser, this.dbPassword);
